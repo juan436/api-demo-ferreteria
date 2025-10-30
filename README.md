@@ -113,7 +113,3 @@ La API usa JWT (JSON Web Tokens) para autenticación. Para endpoints protegidos,
 ```
 Authorization: Bearer <tu_token_jwt>
 ```
-
-## 📝 Licencia
-
-MIT License
