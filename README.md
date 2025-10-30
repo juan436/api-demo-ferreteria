@@ -2,6 +2,8 @@
 
 Backend API para ferreteria MVP construido con NestJS y MongoDB.
 
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
 ## 🚀 Inicio Rápido
 
 ### Prerequisitos
