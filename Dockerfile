@@ -17,7 +17,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/logo.png ./logo.png
+COPY --from=builder /app/logo.jpeg ./logo.jpeg
 
 EXPOSE 3001
 CMD ["node", "dist/main.js"]
