@@ -19,7 +19,7 @@ RUN pnpm config set store-dir /pnpm-store && \
     pnpm install --frozen-lockfile --ignore-scripts
 
 RUN pnpm config set ignore-scripts false && \
-    pnpm rebuild bcrypt --workspace-root && \
+    pnpm rebuild bcrypt && \
     pnpm config set ignore-scripts true
 
 COPY . .
