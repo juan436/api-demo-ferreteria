@@ -8,6 +8,8 @@ ENV PNPM_VERSION=9.1.2 \
 RUN corepack enable && \
     corepack prepare pnpm@${PNPM_VERSION} --activate
 
+RUN apk add --no-cache python3 make g++
+
 COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm config set store-dir /pnpm-store && \
@@ -15,6 +17,10 @@ RUN pnpm config set store-dir /pnpm-store && \
     pnpm config set ignore-scripts true && \
     pnpm fetch && \
     pnpm install --frozen-lockfile --ignore-scripts
+
+RUN pnpm config set ignore-scripts false && \
+    pnpm rebuild bcrypt --workspace-root && \
+    pnpm config set ignore-scripts true
 
 COPY . .
 RUN pnpm run build
