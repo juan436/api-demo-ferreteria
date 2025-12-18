@@ -1,15 +1,36 @@
-node_modules
-npm-debug.log
-Dockerfile*
-.dockerignore
+# Ignorar TODO por defecto
+**
+
+# Permitir EXPLÍCITAMENTE solo esto
+!src/
+!package.json
+!pnpm-lock.yaml
+!tsconfig*.json
+!nest-cli.json
+!logo.jpeg
+!.env.example
+
+# NUNCA incluir
 .git
 .gitignore
-README.md
-coverage
-.cache
+.gitattributes
+node_modules
 dist
+coverage
+*.log
 .env
-.env.*
-**/*.tsbuildinfo
-.idea
+.env.local
+.env.*.local
+docker-compose*
+Dockerfile*
+.dockerignore
 .vscode
+.idea
+*.md
+LICENSE
+README*
+test
+tests
+__tests__
+*.spec.*
+*.test.*
