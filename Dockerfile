@@ -13,11 +13,13 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm config set store-dir /pnpm-store && \
     pnpm config set strict-peer-dependencies true && \
     pnpm config set ignore-scripts true && \
-    pnpm fetch --prod && \
-    pnpm install -P --frozen-lockfile --ignore-scripts
+    pnpm fetch && \
+    pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
 RUN pnpm run build
+
+RUN pnpm prune --prod
 
 FROM node:20-alpine
 WORKDIR /app
