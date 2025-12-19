@@ -30,8 +30,7 @@ RUN pnpm prune --prod
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production \
-    PORT=3001\
-    HOSTNAME=0.0.0.0
+    PORT=3001
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S -u 1001 -H -G nodejs appuser
@@ -46,7 +45,7 @@ RUN chown -R appuser:nodejs /app && \
     chmod 755 /app/dist/main.js 2>/dev/null || true
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD wget -q --tries=1 --spider http://localhost:3001/api/health || exit 1
+    CMD node -e "require('http').get('http://localhost:3001/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1));"
 
 USER appuser
 EXPOSE 3001
