@@ -45,7 +45,7 @@ RUN chown -R appuser:nodejs /app && \
     chmod 755 /app/dist/main.js 2>/dev/null || true
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD wget -q --tries=1 --spider http://localhost:3001/health || exit 1
+    CMD wget -q --tries=1 --spider http://localhost:3001/api/health || exit 1
 
 USER appuser
 EXPOSE 3001
