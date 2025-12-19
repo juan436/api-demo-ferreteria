@@ -30,7 +30,8 @@ RUN pnpm prune --prod
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production \
-    PORT=3001
+    PORT=3001\
+    HOSTNAME=0.0.0.0
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S -u 1001 -H -G nodejs appuser
