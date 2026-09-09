@@ -2,7 +2,7 @@
 
 Backend del ambiente de **demostración** del sistema de gestión de compras para una ferretería: proveedores, sucursales y órdenes de compra. **NestJS + MongoDB (Mongoose)**.
 
-Es una build simplificada, pensada para mostrar el sistema sin tocar datos reales. El frontend está en [`mvp-ferreteria`](https://github.com/juan436/mvp-ferreteria).
+Es una build simplificada, pensada para mostrar el sistema sin tocar datos reales. El frontend está en [`mvp-demo-ferreteria`](https://github.com/juan436/mvp-demo-ferreteria).
 
 ---
 
