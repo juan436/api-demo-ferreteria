@@ -1,115 +1,81 @@
-# ferreteria Backend API
+# Ferretería — API (demo)
 
-Backend API para ferreteria MVP construido con NestJS y MongoDB.
+Backend del ambiente de **demostración** del sistema de gestión de compras para una ferretería: proveedores, sucursales y órdenes de compra. **NestJS + MongoDB (Mongoose)**.
 
-![License](https://img.shields.io/badge/License-MIT-green.svg)
+Es una build simplificada, pensada para mostrar el sistema sin tocar datos reales. El frontend está en [`mvp-ferreteria`](https://github.com/juan436/mvp-ferreteria).
 
-## 🚀 Inicio Rápido
+---
 
-### Prerequisitos
+## Módulos
 
-- Node.js >= 18.0.0
-- MongoDB >= 6.0
-- npm >= 9.0.0
+| Módulo | Responsabilidad |
+|---|---|
+| `auth` | Login con JWT (`passport-jwt` + `passport-local`), hash con bcrypt |
+| `users` | Cuentas y roles |
+| `providers` | Proveedores, con búsqueda |
+| `branches` | Sucursales |
+| `orders` | Órdenes de compra |
+| `mail` | Envío de la orden al proveedor (`@nestjs-modules/mailer` + Handlebars, adjunto Excel con `exceljs`) |
+| `admin` | Operaciones de administración |
+| `seed` | Carga de datos iniciales |
 
-### Instalación
+---
+
+## Decisión de diseño: las órdenes son inmutables
+
+`orders` expone **crear, listar y eliminar — no actualizar**. Una orden de compra emitida no se edita: si está mal, se elimina y se crea de nuevo. Esto mantiene el historial de lo que realmente se envió a cada proveedor sin versiones intermedias ambiguas.
+
+```
+GET    /orders                      listar
+GET    /orders/:id                  detalle
+POST   /orders                      crear
+DELETE /orders/:id                  eliminar
+GET    /orders/by-provider/:id      órdenes de un proveedor
+GET    /orders/by-sucursal/:id      órdenes de una sucursal
+```
+
+Proveedores y sucursales sí tienen CRUD completo.
+
+---
+
+## Correr en local
+
+Requisitos: Node 20, MongoDB, npm.
 
 ```bash
-# Instalar dependencias
 npm install
-
-# Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tus configuraciones
-
-# Iniciar MongoDB local (si no está corriendo)
-mongod
-
-# Sembrar datos iniciales
-npm run seed
-
-# Iniciar en modo desarrollo
-npm run start:dev
+cp env.example .env          # completar valores
+npm run seed                  # datos iniciales
+npm run start:dev             # http://localhost:3001
 ```
 
-### Variables de Entorno
+### Variables de entorno
 
-Crear archivo `.env` en la raíz con:
+| Variable | Descripción |
+|---|---|
+| `MONGODB_URI` | Conexión a MongoDB |
+| `PORT` | Puerto HTTP |
+| `JWT_SECRET` | Secreto de firma del JWT |
+| `JWT_EXPIRATION` | Vida del token (ej. `7d`) |
 
-```env
-MONGODB_URI=mongodb://localhost:27017/ferreteria
-PORT=3001
-JWT_SECRET=tu_secreto_super_seguro_aqui
-JWT_EXPIRATION=7d
-```
+Mailer: credenciales SMTP en el `env.example`.
 
-## 📚 Estructura del Proyecto
+---
 
-```
-src/
-├── auth/           # Autenticación y autorización
-├── users/          # Módulo de usuarios
-├── providers/      # Módulo de proveedores
-├── sucursales/     # Módulo de sucursales
-├── orders/         # Módulo de órdenes
-├── seed/           # Scripts para sembrar datos
-├── common/         # Utilidades compartidas
-├── app.module.ts   # Módulo principal
-└── main.ts         # Punto de entrada
-```
+## Autenticación
 
-## 🛠️ Scripts Disponibles
+JWT en el header: `Authorization: Bearer <token>`.
 
-```bash
-npm run start:dev    # Desarrollo con hot-reload
-npm run start:prod   # Producción
-npm run build        # Compilar
-npm run seed         # Sembrar datos iniciales
-npm run lint         # Linter
-npm run format       # Formatear código
-```
+---
 
-## 📡 Endpoints API
+## Despliegue
 
-### Autenticación
-- `POST /auth/login` - Iniciar sesión
-- `POST /auth/register` - Registrar usuario
-- `GET /auth/profile` - Obtener perfil (requiere token)
+Se empaqueta con el `Dockerfile` incluido (build en capas para cachear dependencias) y corre como contenedor detrás de un reverse proxy con TLS.
 
-### Usuarios
-- `GET /users` - Listar usuarios
-- `GET /users/:id` - Obtener usuario
-- `POST /users` - Crear usuario
-- `PATCH /users/:id` - Actualizar usuario
-- `DELETE /users/:id` - Eliminar usuario
+---
 
-### Proveedores
-- `GET /providers` - Listar proveedores
-- `GET /providers/:id` - Obtener proveedor
-- `POST /providers` - Crear proveedor
-- `PATCH /providers/:id` - Actualizar proveedor
-- `DELETE /providers/:id` - Eliminar proveedor
-- `GET /providers/search` - Buscar proveedores
+## Forma de trabajo
 
-### Sucursales
-- `GET /sucursales` - Listar sucursales
-- `GET /sucursales/:id` - Obtener sucursal
-- `POST /sucursales` - Crear sucursal
-- `PATCH /sucursales/:id` - Actualizar sucursal
-- `DELETE /sucursales/:id` - Eliminar sucursal
-
-### Órdenes (Solo lectura, creación y eliminación - NO SE PUEDEN MODIFICAR)
-- `GET /orders` - Listar órdenes
-- `GET /orders/:id` - Obtener orden
-- `POST /orders` - Crear orden
-- `DELETE /orders/:id` - Eliminar orden
-- `GET /orders/by-provider/:providerId` - Órdenes por proveedor
-- `GET /orders/by-sucursal/:sucursalId` - Órdenes por sucursal
-
-## 🔐 Autenticación
-
-La API usa JWT (JSON Web Tokens) para autenticación. Para endpoints protegidos, incluir el token en el header:
-
-```
-Authorization: Bearer <tu_token_jwt>
-```
+- **NestJS modular:** un módulo por dominio con `controller` / `service` / `schema` / `dto`; DTOs validados con `class-validator`.
+- Commits en Conventional Commits (`feat:`, `fix:`, `refactor:`, `chore:`). Rama `main`.
+- Este ambiente comparte linaje de código con el sistema en producción del cliente; es una snapshot anterior y más simple, mantenida por separado.
